@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn More About Me</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            height: 80%;
+            position: relative;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+            position: relative;
+        }
+        .column img {
+            width: 300px; /* 放大3倍 */
+            height: 300px; /* 放大3倍 */
+            border-radius: 50%;
+            margin-bottom: 20px;
+            position: absolute;
+            top: 10%; /* 下移至图片上方 */
+        }
+        .card {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #000;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            color: #000;
+            background-color: #fff;
+            position: absolute;
+            top: 60%; /* 卡片下移至页面中间稍微偏下 */
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.1);
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .curve {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 6%;
+            background: linear-gradient(to bottom, transparent 0%, #000 50%, transparent 100%);
+        }
+        .curve.left {
+            left: 30%;
+        }
+        .curve.right {
+            right: 30%;
+        }
+        .back-link {
+            margin-top: 20px;
+            font-size: 20px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="column">
+            <img src="../imgs/head.jpg" alt="Head Image">
+            <a href="https://space.bilibili.com/43247861" class="card">Go to my Bilibili-space</a>
+        </div>
+        <div class="curve left"></div>
+        <div class="column">
+            <img src="../imgs/head1.jpg" alt="Head Image">
+            <a href="https://steamcommunity.com/profiles/76561198873435566/" class="card">Go to my Steam profile</a>
+        </div>
+        <div class="curve right"></div>
+        <div class="column">
+            <img src="../imgs/head.jpg" alt="Head Image">
+            <a href="https://github.com/Ortunate" class="card">Go to my Github page</a>
+        </div>
+    </div>
+    <a href="../index.html" class="back-link">Go back</a>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>111 Dormitory</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-top: 100px; /* 上移200px */
+            font-size: 4em; /* 放大2倍 */
+        }
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: calc(4 * 250px + 3 * 100px); /* 计算宽度 */
+            margin-top: 50px;
+        }
+        .links a {
+            text-decoration: none;
+            color: #000;
+            font-size: 18px;
+            display: block;
+            width: 250px; /* 放大卡片宽度 */
+            height: 417px; /* 按比例放大卡片高度 */
+            border: 1px solid #000;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1); /* 添加轻微阴影 */
+            transition: transform 0.2s;
+            background-image: url(../imgs/bed.jpg); /* 添加背景图案 */
+            background-size: cover;
+            background-position: center;
+            padding-top: 25px; /* 调整文字位置 */
+        }
+        .links a .name {
+            font-size: 2em; /* 放大两倍 */
+            font-weight: bold; /* 加粗 */
+            margin-top: 5%; /* 置于卡片的上四分之一处 */
+        }
+        .links a .bed {
+            font-size: 2em; /* 放大两倍 */
+            font-weight: bold; /* 加粗 */
+            margin-top: 50%; /* 置于卡片的二分之一处 */
+        }
+        .links a:hover {
+            transform: scale(1.05);
+        }
+        .footer {
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>❄️ d11111 ❄️</h1>
+    <div class="links">
+        <a href="http://www.waiting1.com">
+            <span class="name">姓名1</span>
+            <span class="bed">（1号床位）</span>
+        </a>
+        <a href="https://ortunate.github.io/Homework/">
+            <span class="name">姓名2</span>
+            <span class="bed">（2号床位）</span>
+        </a>
+        <a href="http://www.waiting3.com">
+            <span class="name">姓名3</span>
+            <span class="bed">（3号床位）</span>
+        </a>
+        <a href="http://www.waiting4.com">
+            <span class="name">姓名4</span>
+            <span class="bed">（4号床位）</span>
+        </a>
+    </div>
+    <div class="footer">
+        <a href="http://www.waiting5.com">班级</a>
+    </div>
+</body>
+</html>

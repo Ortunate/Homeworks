@@ -1,0 +1,30 @@
+http://catb.org/~esr/faqs/smart-questions.html How To Ask Questions The Smart Way
+http://cs.hust.edu.cn/ Hust CS college
+https://akaedu.github.io/book/index.html Linux C编程一站式学习
+https://bilibili.com/ Bilibili
+https://ccf.org.cn/Academic_Evaluation/By_category/ CCF推荐国际学术刊物目录
+https://csdiy.wiki/ cs自学指南
+https://csrankings.org/#/index?all&us CS rankings
+https://educoder.net/ 头歌平台
+https://git-scm.com/book/zh/v2/ Git readme
+https://github.com/SurviveSJTU/SJTU-Application?tab=readme-ov-file SJTH飞跃手册
+https://github.com/SukunaShinmyoumaru-hust/Hust-opensource-Xuejie 华科学解
+https://gre-main.neea.cn/ Gre
+https://haoce.com/book/index 好策读书平台
+https://hust.edu.cn/ Hust
+https://icourses.cn/home/ 爱课程平台
+https://lib.hust.edu.cn/index.html#/resource Hustlibrary
+https://luogu.com.cn/ 洛谷
+https://missing.csail.mit.edu/ The Missing Semester of Your CS Education
+https://oiwiki.org/ Oi Wiki
+https://oxfordlearnersdictionaries.com/ Oxford Dictionary
+https://runoob.com/ 菜鸟自学平台
+https://scholar.google.com/ Google Scholar
+https://sciencedirect.com/journal/artificial-intelligence Artificial Intelligence
+https://sci-hub.st/ scihub
+https://smartcourse.hust.edu.cn/ 学在华中大
+https://stackoverflow.co/ stackoverflow
+https://store.steampowered.com/ steam
+https://studyabroad.hust.edu.cn/ Hust exchange
+https://survivesjtu.gitbook.io/survivesjtumanual SurviveSJTUManual
+https://toefl.cn/ Toefl

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Page</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .left, .right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .left {
+            justify-content: flex-start;
+            align-items: flex-end;
+            transform: translateX(5%); /* 右移至合适的位置 */
+        }
+        .left img {
+            width: 104%; /* 增加20% */
+            height: calc(90vh - 60px); /* Adjust height to fit screen, leaving space for Go Back link */
+            object-fit: cover;
+            border: 1px solid #000;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .left img:hover {
+            transform: scale(1.05);
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .left div {
+            font-size: 2em; /* 放大2倍 */
+            font-weight: bold; /* 加粗 */
+            transform: translateX(-75%); /* 向左平移 */
+        }
+        .right {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            transform: translate(-10%, -10%); /* 向左上方移动 */
+            position: relative;
+        }
+        .showcase {
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .showcase iframe {
+            margin-bottom: 30px; /* Increase the gap between iframes */
+        }
+        .showcase div {
+            font-size: 2em; /* 放大2倍 */
+            font-weight: bold; /* 加粗 */
+        }
+        .back-link {
+            margin-top: 20px;
+            font-size: 2em; /* 放大2倍 */
+            text-decoration: none;
+            color: #000;
+            font-weight: bold; /* 加粗 */
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .top-right {
+            position: absolute;
+            top: 144px; /* 向下移动 */
+            right: 288px; /* 向左移动 */
+            transform: scale(1.1); /* 放大10% */
+        }
+    </style>
+</head>
+<body>
+    <div class="left">
+        <a href="https://www.fender.com/en/electric-guitars/stratocaster/american-professional-ii-stratocaster-hss/0113910761.html">
+            <img src="../imgs/guitar.jpg" alt="Guitar">
+        </a>
+        <div>My first Fender</div>
+    </div>
+    <div class="right">
+        <img src="../imgs/4.gif" alt="Top Image" class="top-right">
+        <div class="showcase">
+            <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1953860839&auto=0&height=66" allow="autoplay"></iframe>
+            <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=2053344480&auto=0&height=66" allow="autoplay"></iframe>
+            <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1830610071&auto=1&height=66" allow="autoplay"></iframe>
+            <div>Recently most favorite songs</div>
+        </div>
+    </div>
+    <a href="../index.html" class="back-link">Go back</a>
+</body>
+</html>

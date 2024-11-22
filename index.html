@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruse的主页</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('./imgs/bg1.jpg'); /* 设置页面背景 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white; /* 设置文字颜色为白色 */
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 50px; /* 适当下移标题 */
+        }
+        .title-container img {
+            width: 200px; /* 放大2倍 */
+            height: auto;
+            margin: 0 50px; /* 向两侧移动 */
+        }
+        h1 {
+            font-size: 4em; /* 放大2倍 */
+        }
+        .links {
+            display: flex;
+            justify-content: space-between;
+            width: calc(5 * 250px + 4 * 50px); /* 计算宽度 */
+            margin-top: 100px; /* 下移至页面中间 */
+        }
+        .links a {
+            text-decoration: none;
+            color: rgb(255, 255, 255); /* 设置卡片文字颜色为白色 */
+            font-size: 24px; /* 放大字体 */
+            font-weight: bold; /* 加粗字体 */
+            display: block;
+            width: 250px; /* 放大卡片宽度 */
+            height: 154px; /* 按黄金分割比例放大卡片高度 */
+            border: 1px solid #000;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); /* 添加阴影 */
+            transition: transform 0.2s;
+            background-image: url('card_background.png'); /* 添加背景图案 */
+            background-size: cover;
+            background-position: center;
+            background-color: rgb(49, 49, 49,0.5); /* 纯淡灰色背景 */
+            border-radius: 10px; /* 添加圆角 */
+            margin: 20px; /* 添加外边距 */
+            border: 3px solid #ffffff; /* 加粗边缘 */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3); /* 添加阴影 */
+        }
+        .links a:hover {
+            transform: scale(1.05); /* 鼠标悬停时放大 */
+        }
+        .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+        .notice {
+            font-size: 2em; /* 放大2倍 */
+            font-weight: bold; /* 加粗 */
+            text-align: center;
+            margin-bottom: 10px; /* 减少底部间距 */
+        }
+        .bgm-text {
+            font-size: 1.5em; /* 设置字体大小 */
+            font-weight: bold; /* 加粗 */
+            text-align: center;
+        }
+        .arrow {
+            font-size: 2em; /* 设置箭头大小 */
+            text-align: center;
+        }
+        
+        .footer-container {
+            border: 2px solid white; /* 设置边框颜色为白色 */
+            padding: 20px;
+            margin-top: auto;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .footer a {
+            font-size: 1.5em;
+            color: white; /* 设置底部超链接颜色为黄色 */
+            font-weight: bold; /* 加粗 */
+        }
+    </style>
+</head>
+<body>
+    <div class="title-container">
+        <img src="./imgs/5.gif" alt="Image 5">
+        <h1>Ruse's Main Page</h1>
+        <img src="./imgs/6.gif" alt="Image 6">
+    </div>
+    <div class="links">
+        <a href="web/selfintro.html">个人简介</a>
+        <a href="web/entertainment.html">娱乐</a>
+        <a href="web/music.html">音乐</a>
+        <a href="web/resources.html">资源跳转</a>
+        <a href="web/learnmore.html">Learn More About Me</a>
+    </div>
+    <div class="footer">
+        <div class="bgm-text">BGM在此</div>
+        <div class="arrow">↓</div>
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="https://music.163.com/outchain/player?type=2&id=1875758765&auto=1&height=66" allow="autoplay"></iframe>
+        <div class="notice">所有的框都是可以点的！！！</div>
+        <a href="http://www.waitc0.com">班级</a>
+        <a href="web/d11111.html">宿舍</a>
+    </div>
+</body>
+</html>
