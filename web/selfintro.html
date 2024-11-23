@@ -17,26 +17,51 @@
             color: #333;
         }
         .container {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
             text-align: center;
             background-color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
         }
         .container img {
             border-radius: 50%;
             width: 150px;
             height: 150px;
             object-fit: cover;
+            margin: 20px;
         }
-        .container p {
-            margin: 10px 0;
+        .bubble {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+            height: 100px;
+            border-radius: 50px;
+            background-color: #e0e0e0;
+            margin: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+        .bubble p {
+            margin: 0;
             font-size: 1.2em; /* 放大字体 */
+        }
+        .bubble p::before {
+            content: attr(data-label);
+            display: block;
+            font-weight: bold;
         }
         .back-link {
             position: absolute;
             bottom: 20px;
-            font-size: 1.2em; /* 放大字体 */
+            font-size: 1.2em;
             text-decoration: none;
             color: #007BFF;
         }
@@ -48,16 +73,16 @@
 <body>
     <div class="container">
         <img src="../imgs/head.jpg" alt="头像">
-        <p>姓名：xxx</p>
-        <p>英文名：xxx</p>
-        <p>就读学校：xxx</p>
-        <p>学院：xxx</p>
-        <p>最爱的运动：羽毛球</p>
-        <p>最爱的乐器：Guitar</p>
-        <p>最爱的风格：Funk</p>
-        <p>最爱的颜色：Purple</p>
-        <p>最爱的动物：鸭嘴兽</p>
-        <p>最爱的装饰风格：极简主义</p>
+        <div class="bubble"><p data-label="姓名：">xxx</p></div>
+        <div class="bubble"><p data-label="英文名：">xxx</p></div>
+        <div class="bubble"><p data-label="就读学校：">xxx</p></div>
+        <div class="bubble"><p data-label="学院：">xxx</p></div>
+        <div class="bubble"><p data-label="最爱的运动：">xxx</p></div>
+        <div class="bubble"><p data-label="最爱的乐器：">xxx</p></div>
+        <div class="bubble"><p data-label="最爱的风格：">xxx</p></div>
+        <div class="bubble"><p data-label="最爱的颜色：">xxx</p></div>
+        <div class="bubble"><p data-label="最爱的动物：">xxx</p></div>
+        <div class="bubble"><p data-label="最爱的装饰风格：">xxx</p></div>
     </div>
     <a class="back-link" href="../index.html">Go Back</a>
 </body>
