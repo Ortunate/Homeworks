@@ -6,40 +6,45 @@ using namespace std;
 #define OK 1
 #define ERROR 0
 #define INFEASIBLE -1
-// #define OVERFLOW -2
 #define MAX_VERTEX_NUM 20
+
 typedef int status;
 typedef int KeyType;
 typedef enum
 {
-    DG,
-    DN,
-    UDG,
-    UDN
+    DG,  // Directed Graph
+    DN,  // Directed Network
+    UDG, // Undirected Graph
+    UDN  // Undirected Network
 } GraphKind;
+
 typedef struct
 {
     KeyType key;
     char others[20];
-} VertexType; // 顶点类型定义
+} VertexType; // Vertex data type definition
+
 typedef struct ArcNode
-{                            // 表结点类型定义
-    int adjvex;              // 顶点位置编号
-    struct ArcNode *nextarc; // 下一个表结点指针
+{                            // Adjacency list node structure
+    int adjvex;              // Adjacent vertex index
+    struct ArcNode *nextarc; // Pointer to next arc node
 } ArcNode;
+
 typedef struct VNode
-{                      // 头结点及其数组类型定义
-    VertexType data;   // 顶点信息
-    ArcNode *firstarc; // 指向第一条弧
+{                      // Vertex node structure
+    VertexType data;   // Vertex data
+    ArcNode *firstarc; // Pointer to first adjacent arc
 } VNode, AdjList[MAX_VERTEX_NUM];
+
 typedef struct
-{                       // 邻接表的类型定义
-    AdjList vertices;   // 头结点数组
-    int vexnum, arcnum; // 顶点数、弧数
-    GraphKind kind;     // 图的类型
+{                       // Adjacency list graph structure
+    AdjList vertices;   // Array of vertex nodes
+    int vexnum, arcnum; // Number of vertices and arcs
+    GraphKind kind;     // Graph type
 } ALGraph;
 
 static int duplicated(VertexType V[], int &n)
+// Checks for duplicate vertex keys and counts vertices
 {
     unordered_set<KeyType> keys;
     for (int i = 0; V[i].key != -1; i++)
@@ -51,9 +56,9 @@ static int duplicated(VertexType V[], int &n)
     n = keys.size();
     return FALSE; // No duplicates
 }
+
 status CreateCraph(ALGraph &G, VertexType V[], KeyType VR[][2])
-/*根据V和VR构造图T并返回OK，如果V和VR不正确，返回ERROR
-如果有相同的关键字，返回ERROR。此题允许通过增加其它函数辅助实现本关任务*/
+// Creates graph from vertex array V and edge array VR
 {
     if (V[0].key == -1 || (V[1].key == -1 && VR[0][0] != -1) || duplicated(V, G.vexnum))
         return ERROR; // Invalid input
@@ -62,7 +67,9 @@ status CreateCraph(ALGraph &G, VertexType V[], KeyType VR[][2])
 
     G.arcnum = 0;
     G.kind = UDG;
-    unordered_map<KeyType, int> dic;
+    unordered_map<KeyType, int> dic; // Key to index mapping
+
+    // Initialize vertices
     for (int i = 0; i < G.vexnum; i++)
     {
         dic[V[i].key] = i;
@@ -70,18 +77,22 @@ status CreateCraph(ALGraph &G, VertexType V[], KeyType VR[][2])
         G.vertices[i].firstarc = NULL;
     }
 
+    // Count edges
     while (VR[G.arcnum][0] != -1)
         G.arcnum++;
+
+    // Create adjacency lists for undirected graph
     for (int i = 0; i < G.arcnum; i++)
     {
-        if (VR[i][0] == VR[i][1])
+        if (VR[i][0] == VR[i][1]) // Skip self-loops
             continue;
         KeyType v1 = VR[i][0], v2 = VR[i][1];
         int j, k, flg = 0;
         if (dic.find(v1) == dic.end() || dic.find(v2) == dic.end())
-            return ERROR; // Invalid edge
+            return ERROR; // Invalid edge vertices
         j = dic[v1], k = dic[v2];
 
+        // Check for duplicate edges
         for (ArcNode *p = G.vertices[j].firstarc; p != NULL; p = p->nextarc)
             if (p->adjvex == k)
             {
@@ -91,6 +102,7 @@ status CreateCraph(ALGraph &G, VertexType V[], KeyType VR[][2])
         if (flg)
             continue;
 
+        // Add edge in both directions (undirected)
         ArcNode *p1 = new ArcNode, *p2 = new ArcNode;
         p1->adjvex = k;
         p1->nextarc = G.vertices[j].firstarc;
@@ -103,7 +115,7 @@ status CreateCraph(ALGraph &G, VertexType V[], KeyType VR[][2])
 }
 
 status DestroyGraph(ALGraph &G)
-/*销毁无向图G,删除G的全部顶点和边*/
+// Destroys graph and frees all memory
 {
     for (int i = 0; i < G.vexnum; i++)
     {
@@ -112,7 +124,7 @@ status DestroyGraph(ALGraph &G)
         {
             ArcNode *q = p;
             p = p->nextarc;
-            delete q; // free(q);
+            delete q;
         }
         G.vertices[i].firstarc = NULL;
     }
@@ -122,7 +134,7 @@ status DestroyGraph(ALGraph &G)
 }
 
 int LocateVex(ALGraph G, KeyType u)
-// 根据u在图G中查找顶点，查找成功返回位序，否则返回-1；
+// Finds vertex position by key, returns index or -1 if not found
 {
     for (int i = 0; i < G.vexnum; i++)
         if (G.vertices[i].data.key == u)
@@ -131,21 +143,20 @@ int LocateVex(ALGraph G, KeyType u)
 }
 
 status PutVex(ALGraph &G, KeyType u, VertexType value)
-// 根据u在图G中查找顶点，查找成功将该顶点值修改成value，返回OK；
-// 如果查找失败或关键字不唯一，返回ERROR
+// Updates vertex data, checks for key conflicts
 {
     int i = LocateVex(G, u);
     if (i == -1)
         return ERROR;
     int j = LocateVex(G, value.key);
-    if (j != -1 && j != i)
-        return ERROR; // Duplicate key found
+    if (j != -1 && j != i) // Key already exists in another vertex
+        return ERROR;
     G.vertices[i].data = value;
     return OK;
 }
 
 int FirstAdjVex(ALGraph G, KeyType u)
-// 根据u在图G中查找顶点，查找成功返回顶点u的第一邻接顶点位序，否则返回-1；
+// Returns index of first adjacent vertex, -1 if none exists
 {
     int i = LocateVex(G, u);
     if (i == -1 || G.vertices[i].firstarc == NULL)
@@ -154,7 +165,7 @@ int FirstAdjVex(ALGraph G, KeyType u)
 }
 
 int NextAdjVex(ALGraph G, KeyType v, KeyType w)
-// v对应G的一个顶点,w对应v的邻接顶点；操作结果是返回v的（相对于w）下一个邻接顶点的位序；如果w是最后一个邻接顶点，或v、w对应顶点不存在，则返回-1。
+// Returns next adjacent vertex after w for vertex v
 {
     int i = LocateVex(G, v), j = LocateVex(G, w);
     if (i == -1 || j == -1)
@@ -168,7 +179,7 @@ int NextAdjVex(ALGraph G, KeyType v, KeyType w)
 }
 
 status InsertVex(ALGraph &G, VertexType v)
-// 在图G中插入顶点v，成功返回OK,否则返回ERROR
+// Inserts new vertex into graph
 {
     if (G.vexnum == MAX_VERTEX_NUM || LocateVex(G, v.key) != -1)
         return ERROR;
@@ -178,33 +189,41 @@ status InsertVex(ALGraph &G, VertexType v)
 }
 
 status DeleteVex(ALGraph &G, KeyType v)
-// 在图G中删除关键字v对应的顶点以及相关的弧，成功返回OK,否则返回ERROR
+// Deletes vertex and all related edges
 {
     int i = LocateVex(G, v);
     if (i == -1 || G.vexnum <= 1)
         return ERROR;
+
+    // Delete all edges from this vertex
     ArcNode *p = G.vertices[i].firstarc;
     while (p != NULL)
     {
         ArcNode *q = p;
         p = p->nextarc;
-        delete q; // free(q);
+        delete q;
         G.arcnum--;
     }
+
+    // Shift vertices array to fill gap
     for (int j = i; j < G.vexnum - 1; j++)
         G.vertices[j] = G.vertices[j + 1];
     G.vexnum--;
+
+    // Update adjacency lists to remove references to deleted vertex
     for (int j = 0; j < G.vexnum; j++)
     {
         ArcNode *p = G.vertices[j].firstarc, *q = NULL;
-        while (p && p->adjvex == i) // if is enough
+        // Remove edges pointing to deleted vertex at head
+        while (p && p->adjvex == i)
         {
             ArcNode *temp = p;
             p = p->nextarc;
-            delete temp; // free(temp);
+            delete temp;
         }
         G.vertices[j].firstarc = p;
         q = p;
+        // Remove edges pointing to deleted vertex in middle/end
         while (p != NULL)
         {
             if (p->adjvex == i)
@@ -212,9 +231,9 @@ status DeleteVex(ALGraph &G, KeyType v)
                 q->nextarc = p->nextarc;
                 ArcNode *temp = p;
                 p = p->nextarc;
-                delete temp; // free(temp);
+                delete temp;
             }
-            else if (p->adjvex > i)
+            else if (p->adjvex > i) // Adjust indices after deletion
             {
                 p->adjvex--;
                 q = p;
@@ -231,22 +250,27 @@ status DeleteVex(ALGraph &G, KeyType v)
 }
 
 status InsertArc(ALGraph &G, KeyType v, KeyType w)
-// 在图G中增加弧<v,w>，成功返回OK,否则返回ERROR
+// Inserts edge between vertices v and w
 {
     int i = LocateVex(G, v), j = LocateVex(G, w);
     if (i == -1 || j == -1)
         return ERROR;
+
+    // Check if edge already exists
     ArcNode *p = G.vertices[i].firstarc;
     while (p != NULL)
     {
         if (p->adjvex == j)
-            return ERROR; // Duplicate edge found
+            return ERROR; // Duplicate edge
         p = p->nextarc;
     }
+
+    // Add edge in both directions (undirected graph)
     ArcNode *newArc = new ArcNode;
     newArc->adjvex = j;
     newArc->nextarc = G.vertices[i].firstarc;
     G.vertices[i].firstarc = newArc;
+
     newArc = new ArcNode;
     newArc->adjvex = i;
     newArc->nextarc = G.vertices[j].firstarc;
@@ -256,12 +280,13 @@ status InsertArc(ALGraph &G, KeyType v, KeyType w)
 }
 
 static int da(ArcNode **p, int i)
+// Helper function to delete arc node with given index
 {
     if ((*p)->adjvex == i)
     {
         ArcNode *temp = *p;
         *p = (*p)->nextarc;
-        delete temp; // free(temp);
+        delete temp;
         return 1;
     }
     ArcNode *q = *p, *r = (*p)->nextarc;
@@ -270,7 +295,7 @@ static int da(ArcNode **p, int i)
         if (r->adjvex == i)
         {
             q->nextarc = r->nextarc;
-            delete r; // free(r);
+            delete r;
             return 1;
         }
         q = r;
@@ -278,25 +303,28 @@ static int da(ArcNode **p, int i)
     }
     return 0; // Edge not found
 }
+
 status DeleteArc(ALGraph &G, KeyType v, KeyType w)
-// 在图G中删除弧<v,w>，成功返回OK,否则返回ERROR
+// Deletes edge between vertices v and w
 {
     int i = LocateVex(G, v), j = LocateVex(G, w);
     if (i == -1 || j == -1)
         return ERROR;
     if (da(&G.vertices[i].firstarc, j) == 0)
-        return ERROR; // Edge not found
-    da(&G.vertices[j].firstarc, i);
+        return ERROR;               // Edge not found
+    da(&G.vertices[j].firstarc, i); // Remove reverse edge
     G.arcnum--;
     return OK;
 }
 
 status DFSTraverse(ALGraph &G, void (*visit)(VertexType))
-// 对图G进行深度优先搜索遍历，依次对图中的每一个顶点使用函数visit访问一次，且仅访问一次
+// Performs depth-first search traversal using iterative approach
 {
     if (G.vexnum == 0)
         return ERROR;
     unordered_set<int> visited;
+
+    // Visit all connected components
     for (int j = 0; j < G.vexnum; j++)
     {
         if (visited.find(j) != visited.end())
@@ -311,6 +339,7 @@ status DFSTraverse(ALGraph &G, void (*visit)(VertexType))
             {
                 visit(G.vertices[i].data);
                 visited.insert(i);
+                // Add adjacent vertices to stack in reverse order
                 stack<int> s1;
                 for (ArcNode *p = G.vertices[i].firstarc; p != NULL; p = p->nextarc)
                     if (visited.find(p->adjvex) == visited.end())
@@ -327,11 +356,13 @@ status DFSTraverse(ALGraph &G, void (*visit)(VertexType))
 }
 
 status BFSTraverse(ALGraph &G, void (*visit)(VertexType))
-// 对图G进行广度优先搜索遍历，依次对图中的每一个顶点使用函数visit访问一次，且仅访问一次
+// Performs breadth-first search traversal
 {
     if (G.vexnum == 0)
         return ERROR;
     unordered_set<int> visited;
+
+    // Visit all connected components
     for (int j = 0; j < G.vexnum; j++)
     {
         if (visited.find(j) != visited.end())
@@ -346,6 +377,7 @@ status BFSTraverse(ALGraph &G, void (*visit)(VertexType))
             {
                 visit(G.vertices[i].data);
                 visited.insert(i);
+                // Add all unvisited adjacent vertices to queue
                 for (ArcNode *p = G.vertices[i].firstarc; p != NULL; p = p->nextarc)
                     if (visited.find(p->adjvex) == visited.end())
                         q.push(p->adjvex);
@@ -356,7 +388,7 @@ status BFSTraverse(ALGraph &G, void (*visit)(VertexType))
 }
 
 status SaveGraph(ALGraph G, char FileName[])
-// 将图的数据写入到文件FileName中
+// Saves graph data to file in adjacency list format
 {
     FILE *fp = fopen(FileName, "w");
     if (fp == NULL)
@@ -371,34 +403,38 @@ status SaveGraph(ALGraph G, char FileName[])
             fprintf(fp, "%d ", p->adjvex);
             p = p->nextarc;
         }
-        fprintf(fp, "-1\n");
+        fprintf(fp, "-1\n"); // End marker for adjacency list
     }
     fclose(fp);
     return OK;
 }
+
 status LoadGraph(ALGraph &G, char FileName[])
-// 读入文件FileName的图数据，创建图的邻接表
+// Loads graph from file and creates adjacency list
 {
     FILE *fp = fopen(FileName, "r");
     if (fp == NULL)
         return ERROR;
     G.kind = UDG;
     fscanf(fp, "%d %d", &G.vexnum, &G.arcnum);
+
     for (int i = 0; i < G.vexnum; i++)
     {
         fscanf(fp, "%d %s", &G.vertices[i].data.key, G.vertices[i].data.others);
         G.vertices[i].firstarc = NULL;
         int tmp;
         fscanf(fp, "%d", &tmp);
-        if (tmp == -1)
+        if (tmp == -1) // No adjacent vertices
             continue;
         else
         {
+            // Create first arc node
             ArcNode *p = new ArcNode;
             p->adjvex = tmp;
             p->nextarc = NULL;
             G.vertices[i].firstarc = p;
 
+            // Read remaining adjacent vertices
             while (fscanf(fp, "%d", &tmp) && tmp != -1)
             {
                 ArcNode *q = new ArcNode;
@@ -414,11 +450,13 @@ status LoadGraph(ALGraph &G, char FileName[])
 }
 
 int ConnectedComponent(ALGraph G)
+// Counts number of connected components using DFS
 {
     if (G.vexnum <= 1)
         return G.vexnum;
     unordered_set<int> visited;
     int count = 0;
+
     for (int j = 0; j < G.vexnum; j++)
     {
         if (visited.find(j) != visited.end())
@@ -443,25 +481,30 @@ int ConnectedComponent(ALGraph G)
 }
 
 int **distance(ALGraph G)
+// Computes all-pairs shortest distances using Floyd-Warshall algorithm
 {
-    // all weights 1, n*Dijkstra(nmlogm),Floyd(n^3)
-    // Floyd
     int **dist = new int *[G.vexnum];
     for (int i = 0; i < G.vexnum; i++)
         dist[i] = new int[G.vexnum];
+
+    // Initialize distance matrix
     for (int i = 0; i < G.vexnum; i++)
         for (int j = 0; j < G.vexnum; j++)
             dist[i][j] = INT_MAX;
+
+    // Set direct distances
     for (int i = 0; i < G.vexnum; i++)
-    { // D0
-        dist[i][i] = 0;
+    {
+        dist[i][i] = 0; // Distance to self is 0
         ArcNode *p = G.vertices[i].firstarc;
         while (p != NULL)
         {
-            dist[i][p->adjvex] = 1;
+            dist[i][p->adjvex] = 1; // All edge weights are 1
             p = p->nextarc;
         }
     }
+
+    // Floyd-Warshall algorithm
     for (int k = 0; k < G.vexnum; k++)
         for (int i = 0; i < G.vexnum; i++)
             for (int j = 0; j < G.vexnum; j++)
@@ -471,7 +514,8 @@ int **distance(ALGraph G)
 }
 
 VertexType *VerticesSetLessThanK1(ALGraph &G, VertexType v, int k)
-{ // Floyd
+// Returns vertices within distance k using Floyd-Warshall
+{
     int i = LocateVex(G, v.key);
     if (i == -1)
         return NULL;
@@ -483,7 +527,9 @@ VertexType *VerticesSetLessThanK1(ALGraph &G, VertexType v, int k)
     for (int j = 0; j < G.vexnum; j++)
         if (dist[i][j] <= k)
             result[count++] = G.vertices[j].data;
-    result[count].key = -1; // end
+    result[count].key = -1; // End marker
+
+    // Clean up distance matrix
     for (int j = 0; j < G.vexnum; j++)
         delete[] dist[j];
     delete[] dist;
@@ -491,32 +537,65 @@ VertexType *VerticesSetLessThanK1(ALGraph &G, VertexType v, int k)
 }
 
 VertexType *VerticesSetLessThanK(ALGraph &G, VertexType v, int k)
-{ // Dijkstra
+// Returns vertices within distance k using optimized Dijkstra
+{
     int i = LocateVex(G, v.key);
     if (i == -1)
-        return ERROR;
-    if (G.vertices[i].firstarc == NULL)
         return NULL;
-    VertexType *result = new VertexType[G.vexnum];
+    VertexType *result = new VertexType[G.vexnum + 1];
     int count = 0;
-    int *dist = new int[G.vexnum];      // d(i,j)
-    bool *visited = new bool[G.vexnum]; // set 0
-    memset(dist, INT_MAX, sizeof(int) * G.vexnum);
-    memset(visited, false, sizeof(bool) * G.vexnum);
-    dist[i] = 0;
-    // priority_queue<> q; // set 1
+    vector<int> dist(G.vexnum, INT_MAX);
+    vector<bool> visited(G.vexnum, false);
 
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    dist[i] = 0;
+    pq.push({0, i});
+
+    while (!pq.empty())
+    {
+        int u = pq.top().second;
+        pq.pop();
+        if (visited[u])
+            continue;
+        visited[u] = true;
+        if (dist[u] > k)
+            break;
+
+        // Relax adjacent vertices
+        for (ArcNode *p = G.vertices[u].firstarc; p != NULL; p = p->nextarc)
+        {
+            int v_adj = p->adjvex;
+            int newDist = dist[u] + 1;
+
+            if (newDist < dist[v_adj])
+            {
+                dist[v_adj] = newDist;
+                if (newDist <= k)
+                    pq.push({newDist, v_adj});
+            }
+        }
+    }
+
+    // Collect vertices within distance k
+    for (int j = 0; j < G.vexnum; j++)
+        if (dist[j] <= k)
+            result[count++] = G.vertices[j].data;
+
+    result[count].key = -1; // End marker
     return result;
 }
 
 int ShortestPathLen(ALGraph G, VertexType v, VertexType w)
-{ // Floyd
+// Computes shortest path length between two vertices
+{
     int i = LocateVex(G, v.key);
     int j = LocateVex(G, w.key);
     if (i == -1 || j == -1 || G.vertices[i].firstarc == NULL)
         return ERROR;
     int **dist = distance(G);
     int result = dist[i][j];
+
+    // Clean up distance matrix
     for (int k = 0; k < G.vexnum; k++)
         delete[] dist[k];
     delete[] dist;
@@ -524,6 +603,7 @@ int ShortestPathLen(ALGraph G, VertexType v, VertexType w)
 }
 
 int main(void)
+// Main function providing interactive menu for graph operations
 {
     vector<pair<string, ALGraph>> graphs(1, {"Default", {}});
     int op = 1;
@@ -531,6 +611,7 @@ int main(void)
     VertexType V[MAX_VERTEX_NUM];
     KeyType VR[MAX_VERTEX_NUM * MAX_VERTEX_NUM][2];
 
+    // Lambda function for vertex visiting
     auto visit = [](VertexType vertex)
     {
         printf("%d %s | ", vertex.key, vertex.others);
@@ -538,8 +619,7 @@ int main(void)
 
     while (op)
     {
-        // system("cls");
-        // printf("\n\n");
+        // Display menu
         printf("      Menu for Graph Management System \n");
         printf("-----------------------Basic---------------------\n");
         printf("    1. CreateGraph           2. DestroyGraph\n");
@@ -564,7 +644,7 @@ int main(void)
 
         switch (op)
         {
-        case 1: // CreateGraph
+        case 1: // Create graph from definition
         {
             if (V[0].key == -1)
             {
@@ -575,7 +655,7 @@ int main(void)
             if (CreateCraph(graphs[currentGraph].second, V, VR) == OK)
             {
                 printf("Graph '%s' created successfully!\n", graphs[currentGraph].first.c_str());
-                // Reset the definition arrays for future use
+                // Reset definition arrays
                 memset(V, -1, sizeof(V));
                 memset(VR, -1, sizeof(VR));
             }
@@ -584,7 +664,7 @@ int main(void)
             break;
         }
 
-        case 2: // DestroyGraph
+        case 2: // Destroy graph
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -599,7 +679,7 @@ int main(void)
             break;
         }
 
-        case 3: // LocateVex
+        case 3: // Locate vertex
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -615,14 +695,13 @@ int main(void)
             int loc = LocateVex(graphs[currentGraph].second, key);
             if (loc != -1)
                 printf("Vertex: %d %s found at position %d!\n", key,
-                       graphs[currentGraph].second.vertices[loc].data.key,
-                       loc);
+                       graphs[currentGraph].second.vertices[loc].data.others, loc);
             else
                 printf("Vertex with key %d not found in graph '%s'!\n", key, graphs[currentGraph].first.c_str());
             break;
         }
 
-        case 4: // PutVex
+        case 4: // Update vertex data
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -648,7 +727,7 @@ int main(void)
             break;
         }
 
-        case 5: // FirstAdjVex
+        case 5: // Get first adjacent vertex
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -670,7 +749,7 @@ int main(void)
             break;
         }
 
-        case 6: // NextAdjVex
+        case 6: // Get next adjacent vertex
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -694,7 +773,7 @@ int main(void)
             break;
         }
 
-        case 7: // InsertVex
+        case 7: // Insert vertex
         {
             if (graphs[currentGraph].second.vexnum == MAX_VERTEX_NUM)
             {
@@ -718,7 +797,7 @@ int main(void)
             break;
         }
 
-        case 8: // DeleteVex
+        case 8: // Delete vertex
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -739,7 +818,7 @@ int main(void)
             break;
         }
 
-        case 9: // InsertArc
+        case 9: // Insert edge
         {
             if (graphs[currentGraph].second.vexnum < 2)
             {
@@ -762,7 +841,7 @@ int main(void)
             break;
         }
 
-        case 10: // DeleteArc
+        case 10: // Delete edge
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -784,7 +863,7 @@ int main(void)
             break;
         }
 
-        case 11: // DFSTraverse
+        case 11: // DFS traversal
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -812,7 +891,7 @@ int main(void)
             break;
         }
 
-        case 13: // VerticesSetLessThanK
+        case 13: // Find vertices within distance k
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -857,7 +936,7 @@ int main(void)
             break;
         }
 
-        case 14: // ShortestPathLen
+        case 14: // Calculate shortest path length
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -895,7 +974,7 @@ int main(void)
             break;
         }
 
-        case 15: // ConnectedComponent
+        case 15: // Count connected components
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -908,7 +987,7 @@ int main(void)
             break;
         }
 
-        case 16: // SaveGraph
+        case 16: // Save graph to file
         {
             if (graphs[currentGraph].second.vexnum == 0)
             {
@@ -929,7 +1008,7 @@ int main(void)
             break;
         }
 
-        case 17: // LoadGraph
+        case 17: // Load graph from file
         {
             if (graphs[currentGraph].second.vexnum != 0)
             {
@@ -950,14 +1029,14 @@ int main(void)
             break;
         }
 
-        case 18: // CreateNewGraph
+        case 18: // Create new graph
         {
             char graphName[30];
             printf("Enter name for the new graph: ");
             scanf("%s", graphName);
             getchar();
 
-            // Check if graph name already exists
+            // Check for duplicate names
             bool nameExists = false;
             for (int i = 0; i < graphs.size(); i++)
             {
@@ -982,7 +1061,7 @@ int main(void)
             break;
         }
 
-        case 19: // RemoveGraph
+        case 19: // Remove graph from collection
         {
             if (graphs.size() == 0)
             {
@@ -1011,6 +1090,7 @@ int main(void)
             graphs.erase(graphs.begin() + index);
             printf("Graph removed successfully!\n");
 
+            // Adjust current graph index if necessary
             if (graphs.empty())
             {
                 printf("No graphs left. Create a new graph to continue.\n");
@@ -1022,7 +1102,7 @@ int main(void)
             break;
         }
 
-        case 20: // GraphsInfo
+        case 20: // Display graph information
         {
             if (graphs.empty())
             {
@@ -1054,7 +1134,7 @@ int main(void)
             break;
         }
 
-        case 21: // SwitchGraph
+        case 21: // Switch active graph
         {
             if (graphs.empty())
             {
@@ -1084,7 +1164,7 @@ int main(void)
             break;
         }
 
-        case 22: // InputGraphDefinition
+        case 22: // Input graph definition manually
         {
             printf("Enter graph vertex definitions (format: key data, -1 to end):\n");
             printf("Example: 1 A 2 B 3 C -1 END\n");
@@ -1137,7 +1217,7 @@ int main(void)
             break;
         }
 
-        case 0: // Exit
+        case 0: // Exit program
             // Clean up all graphs before exiting
             for (auto &graph : graphs)
             {

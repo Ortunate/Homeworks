@@ -6,21 +6,18 @@ using namespace std;
 #define OK 1
 #define ERROR 0
 #define INFEASIBLE -1
-// #define OVERFLOW -2
 
 typedef int status;
 typedef int ElemType; // Data element type definition
 
-#define LIST_INIT_SIZE 100
-#define LISTINCREMENT 10
 typedef struct LNode
-{ // Definition of a singly linked list node
+{ // Singly linked list node definition
     ElemType data;
     struct LNode *next;
 } LNode, *LinkList;
 
 status InitList(LinkList &L)
-// If linear list L does not exist, create an empty list and return OK, otherwise return INFEASIBLE.
+// Creates an empty linked list with head node
 {
     if (L != NULL)
         return INFEASIBLE;
@@ -31,7 +28,7 @@ status InitList(LinkList &L)
 }
 
 status DestroyList(LinkList &L)
-// If linear list L exists, destroy it, free memory, and return OK, otherwise return INFEASIBLE.
+// Destroys the list and frees all memory
 {
     if (L == NULL)
         return INFEASIBLE;
@@ -48,7 +45,7 @@ status DestroyList(LinkList &L)
 }
 
 status ClearList(LinkList &L)
-// If linear list L exists, delete all elements in it and return OK, otherwise return INFEASIBLE.
+// Removes all elements but keeps the head node
 {
     if (L == NULL)
         return INFEASIBLE;
@@ -67,7 +64,7 @@ status ClearList(LinkList &L)
 }
 
 status ListEmpty(LinkList L)
-// If list L exists, check if it's empty; return TRUE if empty, FALSE otherwise; if list doesn't exist, return INFEASIBLE.
+// Checks if the list is empty
 {
     if (!L)
         return INFEASIBLE;
@@ -77,7 +74,7 @@ status ListEmpty(LinkList L)
 }
 
 int ListLength(LinkList L)
-// If list L exists, return its length, otherwise return INFEASIBLE.
+// Returns the number of elements in the list
 {
     if (!L)
         return INFEASIBLE;
@@ -89,7 +86,7 @@ int ListLength(LinkList L)
 }
 
 status GetElem(LinkList L, int i, ElemType &e)
-// If list L exists, get its i-th element, save in e, return OK; if i is invalid, return ERROR; if list doesn't exist, return INFEASIBLE.
+// Gets the element at position i (1-based indexing)
 {
     if (i < 1)
         return ERROR;
@@ -111,7 +108,7 @@ status GetElem(LinkList L, int i, ElemType &e)
 }
 
 status LocateElem(LinkList L, ElemType e)
-// If list L exists, find position of element e; if e doesn't exist, return ERROR; if list doesn't exist, return INFEASIBLE.
+// Finds the position of element e in the list
 {
     if (!L)
         return INFEASIBLE;
@@ -128,7 +125,7 @@ status LocateElem(LinkList L, ElemType e)
 }
 
 status PriorElem(LinkList L, ElemType e, ElemType &pre)
-// If list L exists, get the predecessor of element e, save in pre, return OK; if no predecessor, return ERROR; if list doesn't exist, return INFEASIBLE.
+// Gets the predecessor of element e
 {
     if (!L)
         return INFEASIBLE;
@@ -148,7 +145,7 @@ status PriorElem(LinkList L, ElemType e, ElemType &pre)
 }
 
 status NextElem(LinkList L, ElemType e, ElemType &next)
-// If list L exists, get the successor of element e, save in next, return OK; if no successor, return ERROR; if list doesn't exist, return INFEASIBLE.
+// Gets the successor of element e
 {
     if (!L)
         return INFEASIBLE;
@@ -166,7 +163,7 @@ status NextElem(LinkList L, ElemType e, ElemType &next)
 }
 
 status ListInsert(LinkList &L, int i, ElemType e)
-// If list L exists, insert element e before the i-th element, return OK; if position is invalid, return ERROR; if list doesn't exist, return INFEASIBLE.
+// Inserts element e at position i
 {
     if (i < 1)
         return ERROR;
@@ -174,6 +171,7 @@ status ListInsert(LinkList &L, int i, ElemType e)
         return INFEASIBLE;
     LinkList t = L;
     int c = 0;
+    // Find the position before insertion point
     while (t && c < i - 1)
     {
         c++;
@@ -181,6 +179,7 @@ status ListInsert(LinkList &L, int i, ElemType e)
     }
     if (c < i - 1 || !t)
         return ERROR;
+    // Create new node and link it
     LinkList n = (LinkList)malloc(sizeof(LNode));
     n->next = t->next;
     t->next = n;
@@ -189,7 +188,7 @@ status ListInsert(LinkList &L, int i, ElemType e)
 }
 
 status ListDelete(LinkList &L, int i, ElemType &e)
-// If list L exists, delete its i-th element, save it in e, return OK; if position is invalid, return ERROR; if list doesn't exist, return INFEASIBLE.
+// Deletes element at position i and returns it in e
 {
     if (i < 1)
         return ERROR;
@@ -197,6 +196,7 @@ status ListDelete(LinkList &L, int i, ElemType &e)
         return INFEASIBLE;
     LinkList t = L, p = NULL;
     int c = 0;
+    // Find the node before deletion point
     while (t && c < i - 1)
     {
         c++;
@@ -204,6 +204,7 @@ status ListDelete(LinkList &L, int i, ElemType &e)
     }
     if (c < i - 1 || !t || !t->next)
         return ERROR;
+    // Delete the node
     p = t->next;
     e = p->data;
     t->next = p->next;
@@ -212,7 +213,7 @@ status ListDelete(LinkList &L, int i, ElemType &e)
 }
 
 status ListTraverse(LinkList L)
-// If list L exists, display its elements one by one with spaces between them, return OK; if list doesn't exist, return INFEASIBLE.
+// Displays all elements in the list
 {
     if (!L)
         return INFEASIBLE;
@@ -226,7 +227,7 @@ status ListTraverse(LinkList L)
 }
 
 status SaveList(LinkList L, char FileName[])
-// If list L exists, write its elements to file FileName, return OK, otherwise return INFEASIBLE.
+// Saves list elements to a text file
 {
     if (!L)
         return INFEASIBLE;
@@ -242,10 +243,11 @@ status SaveList(LinkList L, char FileName[])
 }
 
 status LoadList(LinkList &L, char FileName[])
-// If list L doesn't exist, read data from file FileName into list L, return OK, otherwise return INFEASIBLE.
+// Loads list elements from a text file
 {
     if (L)
         return INFEASIBLE;
+    // Initialize list with head node
     LinkList n = (LinkList)malloc(sizeof(LNode));
     n->next = NULL;
     L = n;
@@ -254,6 +256,7 @@ status LoadList(LinkList &L, char FileName[])
         return ERROR;
     LinkList t = L;
     ElemType e;
+    // Read elements and create nodes
     while ((fscanf(fp, "%d", &e)) == 1)
     {
         LinkList n = (LinkList)malloc(sizeof(LNode));
@@ -267,10 +270,12 @@ status LoadList(LinkList &L, char FileName[])
 }
 
 status ReverseList(LinkList &L)
+// Reverses the order of elements in the list
 {
     if (!L)
         return INFEASIBLE;
     LinkList p = L->next, q = NULL, r = NULL;
+    // Use three pointers to reverse links
     while (p)
     {
         r = q;
@@ -283,11 +288,13 @@ status ReverseList(LinkList &L)
 }
 
 status RemoveNthFromEnd(LinkList &L, int n)
+// Removes the nth node from the end of the list
 {
     if (!L || (n == 0))
         return INFEASIBLE;
     if (n < 0)
         return ERROR;
+    // Use two pointers with n distance apart
     LinkList p = L->next, q = L->next;
     for (int i = 0; i < n; i++)
     {
@@ -310,12 +317,14 @@ status RemoveNthFromEnd(LinkList &L, int n)
 }
 
 status SortList(LinkList &L)
+// Sorts the list in ascending order using bubble sort
 {
     if (!L)
         return INFEASIBLE;
     if (!L->next || !L->next->next)
         return OK;
     LinkList p = L->next, q = NULL, r = NULL;
+    // Bubble sort implementation
     while (p)
     {
         r = p->next;
@@ -335,9 +344,9 @@ status SortList(LinkList &L)
 }
 
 int main(void)
+// Main function providing interactive menu for linked list operations
 {
-    // Changed from vector<LinkList> to vector<pair<string,LinkList>>
-    vector<pair<string, LinkList>> lists;
+    vector<pair<string, LinkList>> lists; // Stores named lists
     LinkList L = NULL;
     lists.push_back({"Default", NULL}); // Default list with name
     int op = 1, size = 1;
@@ -345,6 +354,7 @@ int main(void)
 
     while (op)
     {
+        // Display menu
         printf("\n\n");
         printf("      Menu for Linear Table On Linked List Structure \n");
         printf("-----------------------Basic---------------------\n");
@@ -359,37 +369,38 @@ int main(void)
         printf("   15. SortList            16. SaveList\n");
         printf("   17. LoadList            18. AddNewList\n");
         printf("   19. SwitchList          20. ListsInfo\n");
-        printf("   21. SetList\n");
+        printf("   21. RemoveList          22. SetList\n");
         printf("-----------------------Exit----------------------\n");
         printf("    0. Exit\n");
-        printf("Please select your operation [0~21]:\n");
+        printf("Please select your operation [0~22]:\n");
 
         scanf("%d", &op);
         getchar();
+
         switch (op)
         {
-        case 1: // InitList
+        case 1: // Initialize list
             if (InitList(lists[currentList].second) == OK)
                 printf("List '%s' created successfully!\n", lists[currentList].first.c_str());
             else
                 printf("List creation failed!\n");
             break;
 
-        case 2: // DestroyList
+        case 2: // Destroy list
             if (DestroyList(lists[currentList].second) == OK)
                 printf("List '%s' destroyed successfully!\n", lists[currentList].first.c_str());
             else
                 printf("List does not exist!\n");
             break;
 
-        case 3: // ClearList
+        case 3: // Clear list
             if (ClearList(lists[currentList].second) == OK)
                 printf("List '%s' cleared successfully!\n", lists[currentList].first.c_str());
             else
                 printf("List does not exist!\n");
             break;
 
-        case 4: // ListEmpty
+        case 4: // Check if empty
             switch (ListEmpty(lists[currentList].second))
             {
             case TRUE:
@@ -404,7 +415,7 @@ int main(void)
             }
             break;
 
-        case 5: // ListLength
+        case 5: // Get list length
         {
             int len = ListLength(lists[currentList].second);
             if (len == INFEASIBLE)
@@ -414,7 +425,7 @@ int main(void)
             break;
         }
 
-        case 6: // GetElem
+        case 6: // Get element at position
         {
             int pos, elem;
             printf("Enter the position of the element: ");
@@ -436,7 +447,7 @@ int main(void)
             break;
         }
 
-        case 7: // LocateElem
+        case 7: // Locate element
         {
             int elem;
             printf("Enter the element to locate: ");
@@ -453,7 +464,7 @@ int main(void)
             break;
         }
 
-        case 8: // PriorElem
+        case 8: // Get predecessor
         {
             int elem, prior;
             printf("Enter the element to find its predecessor: ");
@@ -475,7 +486,7 @@ int main(void)
             break;
         }
 
-        case 9: // NextElem
+        case 9: // Get successor
         {
             int elem, next;
             printf("Enter the element to find its successor: ");
@@ -497,7 +508,7 @@ int main(void)
             break;
         }
 
-        case 10: // ListInsert
+        case 10: // Insert element
         {
             int pos, elem;
             printf("Enter position to insert: ");
@@ -521,7 +532,7 @@ int main(void)
             break;
         }
 
-        case 11: // ListDelete
+        case 11: // Delete element
         {
             int pos, elem;
             printf("Enter position to delete: ");
@@ -543,13 +554,13 @@ int main(void)
             break;
         }
 
-        case 12: // ListTraverse
+        case 12: // Display all elements
             printf("Elements in list '%s':\n", lists[currentList].first.c_str());
             if (ListTraverse(lists[currentList].second) == INFEASIBLE)
                 printf("List does not exist!\n");
             break;
 
-        case 13: // ReverseList
+        case 13: // Reverse list
             switch (ReverseList(lists[currentList].second))
             {
             case OK:
@@ -561,7 +572,7 @@ int main(void)
             }
             break;
 
-        case 14: // RemoveNthFromEnd
+        case 14: // Remove nth from end
         {
             int n;
             printf("Enter the nth node from end to remove: ");
@@ -583,7 +594,7 @@ int main(void)
             break;
         }
 
-        case 15: // SortList
+        case 15: // Sort list
             switch (SortList(lists[currentList].second))
             {
             case OK:
@@ -595,7 +606,7 @@ int main(void)
             }
             break;
 
-        case 16: // SaveList
+        case 16: // Save to file
         {
             char filename[100];
             printf("Enter filename to save: ");
@@ -609,12 +620,13 @@ int main(void)
             break;
         }
 
-        case 17: // LoadList
+        case 17: // Load from file
         {
             char filename[100];
             printf("Enter filename to load: ");
             scanf("%s", filename);
             getchar();
+
             int t = LoadList(lists[currentList].second, filename);
             if (t == OK)
                 printf("List '%s' loaded from %s successfully!\n", lists[currentList].first.c_str(), filename);
@@ -625,14 +637,14 @@ int main(void)
             break;
         }
 
-        case 18: // AddNewList
+        case 18: // Add new named list
         {
             char listName[30];
             printf("Enter name for the new list: ");
             scanf("%s", listName);
             getchar();
 
-            // Check if list name already exists
+            // Check for duplicate names
             bool nameExists = false;
             size = lists.size();
             for (int i = 0; i < size; i++)
@@ -661,7 +673,7 @@ int main(void)
             break;
         }
 
-        case 19: // SwitchList
+        case 19: // Switch active list
         {
             printf("Current list: '%s' (index %d)\n", lists[currentList].first.c_str(), currentList);
             printf("Available lists:\n");
@@ -686,7 +698,7 @@ int main(void)
             break;
         }
 
-        case 20: // ListsInfo
+        case 20: // Display all lists info
         {
             size = lists.size();
             printf("Total number of lists: %d\n", size);
@@ -707,30 +719,56 @@ int main(void)
             break;
         }
 
-        case 21: // reset current list elements
+        case 21: // Remove list from manager
+        {
+            int index;
+            printf("Enter the index of the list to remove: ");
+            scanf("%d", &index);
+            getchar();
+
+            if (index < 0 || index >= lists.size())
+            {
+                printf("Invalid list index!\n");
+                break;
+            }
+
+            if (lists[index].second != NULL)
+                DestroyList(lists[index].second);
+
+            lists.erase(lists.begin() + index);
+            if (currentList >= lists.size())
+                currentList = lists.size() - 1; // Adjust active list index
+
+            printf("List at index %d removed successfully!\n", index);
+            break;
+        }
+
+        case 22: // Manually set list elements
         {
             if (lists[currentList].second == NULL)
             {
                 printf("List '%s' is not initialized!\n", lists[currentList].first.c_str());
                 break;
             }
+
             ClearList(lists[currentList].second);
             int len;
             printf("Enter the number of elements to add: ");
             scanf("%d", &len);
-            getchar();
+            printf("Enter %d elements: ", len);
+
             for (int i = 0; i < len; i++)
             {
                 int elem;
                 scanf("%d", &elem);
-                getchar();
                 ListInsert(lists[currentList].second, i + 1, elem);
             }
+            getchar();
             printf("Elements added to list '%s' successfully!\n", lists[currentList].first.c_str());
             break;
         }
 
-        case 0: // Exit
+        case 0: // Exit program
             // Clean up all lists before exiting
             for (auto &list : lists)
             {

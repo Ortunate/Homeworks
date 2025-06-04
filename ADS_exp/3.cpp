@@ -6,7 +6,6 @@ using namespace std;
 #define OK 1
 #define ERROR 0
 #define INFEASIBLE -1
-// #define OVERFLOW -2
 
 typedef int status;
 typedef int KeyType;
@@ -14,18 +13,41 @@ typedef struct
 {
     KeyType key;
     char others[20];
-} TElemType; // 二叉树结点类型定义
+} TElemType; // Binary tree node element definition
+
 typedef struct
 {
     int pos;
     TElemType data;
-} DEF; // 二叉树结点类型定义
+} DEF; // Position-indexed tree definition
+
 typedef struct BiTNode
-{ // 二叉链表结点的定义
+{ // Binary tree node structure
     TElemType data;
     struct BiTNode *lchild, *rchild;
 } BiTNode, *BiTree;
+
+static int duplicated1(TElemType definition[])
+// Checks for duplicate keys in preorder sequence
+{
+    unordered_set<KeyType> s;
+    int i = 0;
+    while (definition[i].key != -1)
+    {
+        if (definition[i].key == 0) // Skip null nodes
+        {
+            i++;
+            continue;
+        }
+        if (!s.insert(definition[i].key).second)
+            return 1; // Duplicate found
+        i++;
+    }
+    return 0; // No duplicates
+}
+
 static int duplicated(DEF definition[])
+// Checks for duplicate keys in position-indexed definition
 {
     unordered_set<KeyType> s;
     int i = 0;
@@ -36,23 +58,29 @@ static int duplicated(DEF definition[])
             i++;
             continue;
         }
+        if (definition[i].pos == 0) // End of definition
+            break;
         if (!s.insert(definition[i].data.key).second)
-            return 1;
+            return 1; // Duplicate found
         i++;
     }
-    return 0;
+    return 0; // No duplicates
 }
+
 static BiTree spawnNode(void)
+// Creates and initializes a new tree node
 {
     BiTree node = (BiTree)malloc(sizeof(BiTNode));
     node->lchild = node->rchild = NULL;
     return node;
 }
+
 static void helper0(BiTree &T, TElemType definition[], int &i)
+// Recursive helper for building tree from preorder sequence
 {
     if (definition[i].key == -1)
         return;
-    if (definition[i].key == 0)
+    if (definition[i].key == 0) // Null node
     {
         T = NULL;
         i++;
@@ -60,44 +88,48 @@ static void helper0(BiTree &T, TElemType definition[], int &i)
     }
     T = spawnNode();
     T->data = definition[i++];
-    helper0(T->lchild, definition, i);
-    helper0(T->rchild, definition, i);
+    helper0(T->lchild, definition, i); // Build left subtree
+    helper0(T->rchild, definition, i); // Build right subtree
 }
+
 status CreateBiTree1(BiTree &T, TElemType definition[])
-// 根据带空枝的二叉树先根遍历序列definition构造一棵二叉树，将根节点指针赋值给T并返回OK，
-// 如果有相同的关键字，返回ERROR。此题允许通过增加其它函数辅助实现本关任务
+// Creates binary tree from preorder sequence with null markers
 {
-    // if (duplicated(definition))
-    //     return ERROR;
+    if (duplicated1(definition))
+        return ERROR;
     int i = 0;
     if (definition[i].key != -1)
         helper0(T, definition, i);
     return OK;
 }
+
 status CreateBiTree(BiTree &T, DEF definition[])
-{ // copy from
+// Creates binary tree from position-indexed definition
+{
     if (duplicated(definition))
         return ERROR;
     int i = 0, j;
-    static BiTNode *p[100];
+    static BiTNode *p[100]; // Array to hold nodes by position
     while (j = definition[i].pos)
     {
         p[j] = (BiTNode *)malloc(sizeof(BiTNode));
         p[j]->data = definition[i].data;
         p[j]->lchild = NULL;
         p[j]->rchild = NULL;
+        // Link to parent based on position
         if (j != 1)
-            if (j % 2)
+            if (j % 2) // Right child (odd position)
                 p[j / 2]->rchild = p[j];
-            else
+            else // Left child (even position)
                 p[j / 2]->lchild = p[j];
         i++;
     }
-    T = p[1];
+    T = p[1]; // Root is at position 1
     return OK;
 }
+
 status ClearBiTree(BiTree &T)
-// 将二叉树设置成空，并删除所有结点，释放结点空间
+// Destroys tree and frees all nodes recursively
 {
     if (T == NULL)
         return OK;
@@ -107,16 +139,18 @@ status ClearBiTree(BiTree &T)
     T = NULL;
     return OK;
 }
+
 int BiTreeDepth(BiTree T)
-// 求二叉树T的深度
+// Returns the depth of the binary tree
 {
     if (T == NULL)
         return 0;
     int l = BiTreeDepth(T->lchild), r = BiTreeDepth(T->rchild);
     return l > r ? l + 1 : r + 1;
 }
+
 BiTNode *LocateNode(BiTree T, KeyType e)
-// 查找结点
+// Finds node with given key using recursive search
 {
     if (T == NULL)
         return NULL;
@@ -130,23 +164,26 @@ BiTNode *LocateNode(BiTree T, KeyType e)
         return r;
     return NULL;
 }
+
 status Assign(BiTree &T, KeyType e, TElemType value)
-// 实现结点赋值。此题允许通过增加其它函数辅助实现本关任务
+// Updates node data, checks for key conflicts
 {
     BiTree m = LocateNode(T, value.key);
-    if (m && m->data.key != e)
+    if (m && m->data.key != e) // Key conflict with another node
         return ERROR;
     BiTree n = LocateNode(T, e);
-    if (n == NULL)
+    if (n == NULL) // Target node not found
         return ERROR;
     n->data = value;
     return OK;
 }
+
 static BiTree parent(BiTree T, KeyType e)
+// Finds parent of node with given key
 {
     if (T == NULL)
         return NULL;
-    if ((T->lchild && T->lchild->data.key == e) || T->rchild && T->rchild->data.key == e)
+    if ((T->lchild && T->lchild->data.key == e) || (T->rchild && T->rchild->data.key == e))
         return T;
     BiTree l = parent(T->lchild, e);
     if (l)
@@ -156,42 +193,44 @@ static BiTree parent(BiTree T, KeyType e)
         return r;
     return NULL;
 }
+
 BiTNode *GetSibling(BiTree T, KeyType e)
-// 实现获得兄弟结点
+// Returns sibling node of the given key
 {
-    if (T == NULL || e < 2)
+    if (T == NULL || e < 1)
         return NULL;
     BiTree p = parent(T, e);
     if (p == NULL)
         return NULL;
     if (p->lchild && p->lchild->data.key == e)
-        return p->rchild;
+        return p->rchild; // Return right sibling
     else
-        return p->lchild;
+        return p->lchild; // Return left sibling
 }
+
 status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
-// 插入结点。此题允许通过增加其它函数辅助实现本关任务
+// Inserts new node as child of specified parent
 {
-    if (LocateNode(T, c.key))
+    if (LocateNode(T, c.key)) // Key already exists
         return ERROR;
     BiTree m = spawnNode(), n = NULL;
     m->data = c;
-    if (LR == -1)
+    if (LR == -1) // Insert as new root
     {
         m->rchild = T;
         T = m;
         return OK;
     }
     n = LocateNode(T, e);
-    if (n == NULL)
+    if (n == NULL) // Parent not found
         return ERROR;
-    if (LR == 0)
+    if (LR == 0) // Insert as left child
     {
         m->rchild = n->lchild;
         m->lchild = NULL;
         n->lchild = m;
     }
-    else
+    else // Insert as right child
     {
         m->rchild = n->rchild;
         m->lchild = NULL;
@@ -199,7 +238,9 @@ status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
     }
     return OK;
 }
+
 static int getdegr(BiTree &t)
+// Returns the degree (number of children) of a node
 {
     if (t == NULL)
         return 0;
@@ -210,29 +251,30 @@ static int getdegr(BiTree &t)
         c++;
     return c;
 }
+
 status DeleteNode(BiTree &T, KeyType e)
-// 删除结点。此题允许通过增加其它函数辅助实现本关任务
+// Deletes node with given key, handles different cases
 {
     if (T == NULL || e < 1)
         return ERROR;
 
-    if (T->data.key == e)
+    if (T->data.key == e) // Deleting root
     {
         int dt = getdegr(T);
         switch (dt)
         {
-        case 0:
+        case 0: // Leaf node
             free(T);
             T = NULL;
             break;
-        case 1:
+        case 1: // One child
         {
             BiTree p = T;
             T = T->lchild ? T->lchild : T->rchild;
             free(p);
             break;
         }
-        case 2:
+        case 2: // Two children - attach right subtree to rightmost of left
         {
             BiTree p = T, l = T->lchild, r = T->rchild;
             T = l;
@@ -252,14 +294,14 @@ status DeleteNode(BiTree &T, KeyType e)
     int dm = getdegr(m);
     switch (dm)
     {
-    case 0:
+    case 0: // Leaf node - simply remove link
         if (p->lchild && p->lchild->data.key == e)
             p->lchild = NULL;
         else
             p->rchild = NULL;
         free(m);
         break;
-    case 1:
+    case 1: // One child - replace with child
     {
         BiTree c = m->lchild ? m->lchild : m->rchild;
         if (p->lchild && p->lchild->data.key == e)
@@ -269,7 +311,7 @@ status DeleteNode(BiTree &T, KeyType e)
         free(m);
         break;
     }
-    case 2:
+    case 2: // Two children - merge subtrees
     {
         BiTree l = m->lchild, r = m->rchild;
         if (p->lchild && p->lchild->data.key == e)
@@ -285,8 +327,9 @@ status DeleteNode(BiTree &T, KeyType e)
     }
     return OK;
 }
+
 status PreOrderTraverse(BiTree T, void (*visit)(BiTree))
-// 先序遍历二叉树T
+// Recursive preorder traversal
 {
     if (T == NULL)
         return OK;
@@ -295,8 +338,9 @@ status PreOrderTraverse(BiTree T, void (*visit)(BiTree))
     PreOrderTraverse(T->rchild, visit);
     return OK;
 }
+
 status PreOrderTraverseIII(BiTree T, void (*visit)(BiTree))
-// 先序遍历二叉树T
+// Iterative preorder traversal using stack
 {
     if (T == NULL)
         return OK;
@@ -307,15 +351,16 @@ status PreOrderTraverseIII(BiTree T, void (*visit)(BiTree))
         BiTree t = s.top();
         s.pop();
         visit(t);
-        if (t->rchild)
+        if (t->rchild) // Push right first (will be processed after left)
             s.push(t->rchild);
         if (t->lchild)
             s.push(t->lchild);
     }
     return OK;
 }
+
 status InOrderTraverse(BiTree T, void (*visit)(BiTree))
-// 中序遍历二叉树T
+// Recursive inorder traversal
 {
     if (T == NULL)
         return OK;
@@ -324,8 +369,9 @@ status InOrderTraverse(BiTree T, void (*visit)(BiTree))
     InOrderTraverse(T->rchild, visit);
     return OK;
 }
+
 status PostOrderTraverse(BiTree T, void (*visit)(BiTree))
-// 后序遍历二叉树T
+// Recursive postorder traversal
 {
     if (T == NULL)
         return OK;
@@ -334,8 +380,9 @@ status PostOrderTraverse(BiTree T, void (*visit)(BiTree))
     visit(T);
     return OK;
 }
+
 status LevelOrderTraverse(BiTree T, void (*visit)(BiTree))
-// 按层遍历二叉树T
+// Level order traversal using queue
 {
     if (T == NULL)
         return OK;
@@ -353,7 +400,9 @@ status LevelOrderTraverse(BiTree T, void (*visit)(BiTree))
     }
     return OK;
 }
+
 static void preprint(BiTree T, FILE *fp)
+// Helper function to write preorder sequence to file
 {
     if (T == NULL)
     {
@@ -364,8 +413,9 @@ static void preprint(BiTree T, FILE *fp)
     preprint(T->lchild, fp);
     preprint(T->rchild, fp);
 }
+
 status SaveBiTree(BiTree T, char FileName[])
-// 将二叉树的结点数据写入到文件FileName中
+// Saves tree to file in preorder format with null markers
 {
     FILE *fp = fopen(FileName, "w");
     if (fp == NULL)
@@ -375,14 +425,14 @@ status SaveBiTree(BiTree T, char FileName[])
         fprintf(fp, "-1 NULL");
         return OK;
     }
-    // preorder with nullptr
     preprint(T, fp);
-    fprintf(fp, "-1 NULL");
+    fprintf(fp, "-1 NULL"); // Terminator
     fclose(fp);
     return OK;
 }
+
 status LoadBiTree(BiTree &T, char FileName[])
-// 读入文件FileName的结点数据，创建二叉树
+// Loads tree from file containing preorder sequence
 {
     if (T != NULL)
         ClearBiTree(T);
@@ -392,6 +442,7 @@ status LoadBiTree(BiTree &T, char FileName[])
     TElemType v[100] = {};
     TElemType t;
     int i = 0;
+    // Read elements until terminator
     while (1)
     {
         fscanf(fp, "%d %s", &t.key, &t.others);
@@ -403,8 +454,9 @@ status LoadBiTree(BiTree &T, char FileName[])
     CreateBiTree1(T, v);
     return OK;
 }
+
 status InvertTree(BiTree &T)
-// 交换二叉树T的左右子树
+// Swaps left and right subtrees recursively
 {
     if (T == NULL)
         return OK;
@@ -415,7 +467,9 @@ status InvertTree(BiTree &T)
     InvertTree(T->rchild);
     return OK;
 }
+
 int MaxPathSum(BiTree &T)
+// Finds maximum path sum from root to leaf
 {
     if (T == NULL)
         return 0;
@@ -425,29 +479,36 @@ int MaxPathSum(BiTree &T)
     int r = MaxPathSum(T->rchild);
     return max(l, r) + T->data.key;
 }
+
 BiTree LowestCommonAncestor(BiTree T, BiTree p, BiTree q)
+// Finds the lowest common ancestor of two nodes
 {
     if (T == NULL || T == p || T == q)
         return T;
     BiTree l = LowestCommonAncestor(T->lchild, p, q);
     BiTree r = LowestCommonAncestor(T->rchild, p, q);
-    if (l && r)
+    if (l && r) // Found nodes in different subtrees
         return T;
-    return l ? l : r;
+    return l ? l : r; // Return non-null result
 }
+
 int main(void)
+// Main function providing interactive menu for binary tree operations
 {
-    vector<pair<string, BiTree>> trees(1, {"Default", NULL});
+    vector<pair<string, BiTree>> trees(1, {"Default", NULL}); // Tree collection
     int op = 1;
-    int currentTree = 0; // Index of currently active tree
-    DEF definition[100] = {};
+    int currentTree = 0;      // Index of currently active tree
+    DEF definition[100] = {}; // Tree definition storage
+
+    // Lambda function for node visiting
     auto visit = [](BiTree node)
     {
         printf("%d %s | ", node->data.key, node->data.others);
     };
+
     while (op)
     {
-        // system("cls");
+        // Display menu
         printf("\n\n");
         printf("      Menu for Binary Tree Management System \n");
         printf("-----------------------Basic---------------------\n");
@@ -474,38 +535,33 @@ int main(void)
 
         switch (op)
         {
-        case 1: // CreateBiTree
+        case 1: // Create tree from definition
         {
-            // Check if tree already exists
             if (trees[currentTree].second != NULL)
             {
                 printf("Tree '%s' already exists! Destroy it first.\n", trees[currentTree].first.c_str());
                 break;
             }
 
-            // Get tree definition from previously defined array
             printf("Using tree definition from memory.\n");
-            int count = 0;
 
-            // Check if definition is valid
             if (definition[0].pos == 0)
             {
                 printf("No tree definition available! Use option 24 to input one first.\n");
                 break;
             }
 
-            // Create tree
             if (CreateBiTree(trees[currentTree].second, definition) == OK)
             {
                 printf("Tree '%s' created successfully!\n", trees[currentTree].first.c_str());
-                memset(definition, 0, sizeof(definition)); // Clear definition array
+                memset(definition, 0, sizeof(definition)); // Clear definition
             }
             else
                 printf("Error creating tree! Check for duplicate keys.\n");
             break;
         }
 
-        case 2: // DestroyBiTree
+        case 2: // Destroy tree
             if (ClearBiTree(trees[currentTree].second) == OK)
             {
                 trees[currentTree].second = NULL;
@@ -515,14 +571,14 @@ int main(void)
                 printf("Tree does not exist!\n");
             break;
 
-        case 3: // ClearBiTree
+        case 3: // Clear tree
             if (ClearBiTree(trees[currentTree].second) == OK)
                 printf("Tree '%s' cleared successfully!\n", trees[currentTree].first.c_str());
             else
                 printf("Tree does not exist!\n");
             break;
 
-        case 4: // BiTreeEmpty
+        case 4: // Check if empty
             if (trees[currentTree].second == NULL)
                 printf("Tree '%s' does not exist!\n", trees[currentTree].first.c_str());
             else if (trees[currentTree].second->lchild == NULL && trees[currentTree].second->rchild == NULL)
@@ -531,7 +587,7 @@ int main(void)
                 printf("Tree '%s' is not empty!\n", trees[currentTree].first.c_str());
             break;
 
-        case 5: // BiTreeDepth
+        case 5: // Get tree depth
         {
             if (trees[currentTree].second == NULL)
             {
@@ -544,7 +600,7 @@ int main(void)
             break;
         }
 
-        case 6: // LocateNode
+        case 6: // Locate node by key
         {
             if (trees[currentTree].second == NULL)
             {
@@ -565,7 +621,7 @@ int main(void)
             break;
         }
 
-        case 7: // Assign
+        case 7: // Assign new value to node
         {
             if (trees[currentTree].second == NULL)
             {
@@ -590,7 +646,7 @@ int main(void)
             break;
         }
 
-        case 8: // GetSibling
+        case 8: // Find sibling node
         {
             if (trees[currentTree].second == NULL)
             {
@@ -611,7 +667,7 @@ int main(void)
             break;
         }
 
-        case 9: // InsertNode
+        case 9: // Insert new node
         {
             if (trees[currentTree].second == NULL)
             {
@@ -639,7 +695,7 @@ int main(void)
             break;
         }
 
-        case 10: // DeleteNode
+        case 10: // Delete node
         {
             if (trees[currentTree].second == NULL)
             {
@@ -659,7 +715,7 @@ int main(void)
             break;
         }
 
-        case 11: // PreOrderTraverse
+        case 11: // Preorder traversal
         {
             if (trees[currentTree].second == NULL)
             {
@@ -675,7 +731,7 @@ int main(void)
             break;
         }
 
-        case 12: // InOrderTraverse
+        case 12: // Inorder traversal
         {
             if (trees[currentTree].second == NULL)
             {
@@ -691,7 +747,7 @@ int main(void)
             break;
         }
 
-        case 13: // PostOrderTraverse
+        case 13: // Postorder traversal
         {
             if (trees[currentTree].second == NULL)
             {
@@ -707,7 +763,7 @@ int main(void)
             break;
         }
 
-        case 14: // LevelOrderTraverse
+        case 14: // Level order traversal
         {
             if (trees[currentTree].second == NULL)
             {
@@ -723,7 +779,7 @@ int main(void)
             break;
         }
 
-        case 15: // MaxPathSum
+        case 15: // Calculate maximum path sum
         {
             if (trees[currentTree].second == NULL)
             {
@@ -736,7 +792,7 @@ int main(void)
             break;
         }
 
-        case 16: // LowestCommonAncestor
+        case 16: // Find lowest common ancestor
         {
             if (trees[currentTree].second == NULL)
             {
@@ -770,7 +826,7 @@ int main(void)
             break;
         }
 
-        case 17: // InvertTree
+        case 17: // Invert tree
         {
             if (trees[currentTree].second == NULL)
             {
@@ -785,7 +841,7 @@ int main(void)
             break;
         }
 
-        case 18: // SaveBiTree
+        case 18: // Save tree to file
         {
             if (trees[currentTree].second == NULL)
             {
@@ -805,7 +861,7 @@ int main(void)
             break;
         }
 
-        case 19: // LoadBiTree
+        case 19: // Load tree from file
         {
             if (trees[currentTree].second != NULL)
             {
@@ -825,14 +881,14 @@ int main(void)
             break;
         }
 
-        case 20: // CreateNewTree
+        case 20: // Add new tree to collection
         {
             char treeName[30];
             printf("Enter name for the new tree: ");
             scanf("%s", treeName);
             getchar();
 
-            // Check if tree name already exists
+            // Check for duplicate names
             bool nameExists = false;
             for (int i = 0; i < trees.size(); i++)
             {
@@ -854,7 +910,7 @@ int main(void)
             break;
         }
 
-        case 21: // RemoveTree
+        case 21: // Remove tree from collection
         {
             if (trees.size() == 0)
             {
@@ -885,6 +941,7 @@ int main(void)
             trees.erase(trees.begin() + index);
             printf("Tree removed successfully!\n");
 
+            // Adjust current tree index if necessary
             if (trees.empty())
             {
                 printf("No trees left. Create a new tree to continue.\n");
@@ -896,7 +953,7 @@ int main(void)
             break;
         }
 
-        case 22: // TreesInfo
+        case 22: // Display information about all trees
         {
             if (trees.empty())
             {
@@ -923,7 +980,7 @@ int main(void)
             break;
         }
 
-        case 23: // SwitchTree
+        case 23: // Switch to different tree
         {
             if (trees.empty())
             {
@@ -952,9 +1009,10 @@ int main(void)
             break;
         }
 
-        case 24: // InputTreeDefinition
+        case 24: // Input tree definition manually
         {
-            printf("Enter tree definition :\n");
+            printf("Enter tree definition (format: position key data):\n");
+            printf("Enter '0 0 NULL' to finish input\n");
             int i = 0;
 
             while (1)
@@ -965,7 +1023,7 @@ int main(void)
                 i++;
                 if (i >= 100)
                 {
-                    printf("Maximum 100 nodes.\n");
+                    printf("Maximum 100 nodes allowed.\n");
                     break;
                 }
             }
@@ -975,7 +1033,7 @@ int main(void)
             break;
         }
 
-        case 0: // Exit
+        case 0: // Exit program
             // Clean up all trees before exiting
             for (auto &tree : trees)
             {
@@ -988,12 +1046,6 @@ int main(void)
         default:
             printf("Invalid option! Please try again.\n");
         }
-
-        // if (op != 0)
-        // {
-        //     printf("\nPress Enter to continue...");
-        //     getchar();
-        // }
     }
 
     return 0;

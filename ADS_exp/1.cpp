@@ -13,7 +13,6 @@ typedef int ElemType; // Data element type definition
 
 #define LIST_INIT_SIZE 100
 #define LISTINCREMENT 10
-typedef int ElemType;
 typedef struct
 { // Sequential list definition
     ElemType *elem;
@@ -32,7 +31,7 @@ typedef struct
 } LISTS;
 
 status InitList(SqList &L)
-// Constructs an empty linear list L, returns OK if successful, INFEASIBLE otherwise
+// Initializes an empty sequential list
 {
     if (L.elem != NULL)
         return INFEASIBLE;
@@ -43,7 +42,7 @@ status InitList(SqList &L)
 }
 
 status DestroyList(SqList &L)
-// Destroys linear list L if it exists, frees memory and returns OK, otherwise returns INFEASIBLE
+// Destroys the list and frees memory
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -53,7 +52,7 @@ status DestroyList(SqList &L)
 }
 
 status ClearList(SqList &L)
-// Clears all elements in list L if it exists, returns OK, otherwise returns INFEASIBLE
+// Clears all elements from the list
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -62,7 +61,7 @@ status ClearList(SqList &L)
 }
 
 status ListEmpty(SqList &L)
-// Checks if list L is empty, returns TRUE if empty, FALSE if not, INFEASIBLE if L doesn't exist
+// Checks if the list is empty
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -70,7 +69,7 @@ status ListEmpty(SqList &L)
 }
 
 status ListLength(SqList &L)
-// Returns the length of list L if it exists, otherwise returns INFEASIBLE
+// Returns the number of elements in the list
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -78,8 +77,7 @@ status ListLength(SqList &L)
 }
 
 status GetElem(SqList &L, int i, ElemType &e)
-// Gets the i-th element from list L and stores in e, returns OK if successful
-// Returns ERROR if i is invalid, INFEASIBLE if list doesn't exist
+// Gets the element at position i (1-based indexing)
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -90,8 +88,7 @@ status GetElem(SqList &L, int i, ElemType &e)
 }
 
 int LocateElem(SqList &L, ElemType &e)
-// Finds position of element e in list L, returns position if found, 0 if not found
-// Returns INFEASIBLE if list doesn't exist
+// Finds the position of element e in the list
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -102,8 +99,7 @@ int LocateElem(SqList &L, ElemType &e)
 }
 
 status PriorElem(SqList &L, ElemType &e, ElemType &pre)
-// Gets predecessor of element e in list L and stores in pre
-// Returns OK if successful, ERROR if no predecessor, INFEASIBLE if list doesn't exist
+// Gets the predecessor of element e
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -119,8 +115,7 @@ status PriorElem(SqList &L, ElemType &e, ElemType &pre)
 }
 
 status NextElem(SqList &L, ElemType &e, ElemType &next)
-// Gets successor of element e in list L and stores in next
-// Returns OK if successful, ERROR if no successor, INFEASIBLE if list doesn't exist
+// Gets the successor of element e
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -134,8 +129,7 @@ status NextElem(SqList &L, ElemType &e, ElemType &next)
 }
 
 status ListInsert(SqList &L, int i, ElemType &e)
-// Inserts element e before position i in list L
-// Returns OK if successful, ERROR if position is invalid, INFEASIBLE if list doesn't exist
+// Inserts element e at position i, expands array if necessary
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -144,7 +138,7 @@ status ListInsert(SqList &L, int i, ElemType &e)
     if (L.length == L.listsize)
     {
         L.elem = (ElemType *)realloc(L.elem, (L.listsize + LISTINCREMENT) * sizeof(ElemType));
-        L.listsize = LISTINCREMENT;
+        L.listsize += LISTINCREMENT;
     }
     L.length++;
     for (int j = L.length - 1; j > i - 2; j--)
@@ -154,8 +148,7 @@ status ListInsert(SqList &L, int i, ElemType &e)
 }
 
 status ListDelete(SqList &L, int i, ElemType &e)
-// Deletes the i-th element from list L and stores it in e
-// Returns OK if successful, ERROR if position is invalid, INFEASIBLE if list doesn't exist
+// Deletes element at position i and returns it in e
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -169,7 +162,7 @@ status ListDelete(SqList &L, int i, ElemType &e)
 }
 
 status ListTraverse(SqList &L)
-// Displays all elements in list L, returns OK if successful, INFEASIBLE if list doesn't exist
+// Displays all elements in the list
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -181,8 +174,7 @@ status ListTraverse(SqList &L)
 }
 
 int MaxSubArray(SqList &L)
-// Finds maximum sum of contiguous subarray in list L
-// Returns the maximum sum, ERROR if list is empty or doesn't exist
+// Finds maximum sum of contiguous subarray using Kadane's algorithm
 {
     if (L.elem == NULL || L.length < 1)
         return ERROR;
@@ -201,7 +193,6 @@ int MaxSubArray(SqList &L)
 
 int SubArrayNum(SqList &L, int k)
 // Counts number of contiguous subarrays with sum equal to k
-// Returns the count, ERROR if list is empty or doesn't exist
 {
     if (L.elem == NULL || L.length < 1)
         return ERROR;
@@ -220,8 +211,7 @@ int SubArrayNum(SqList &L, int k)
 }
 
 status SortList(SqList &L)
-// Sorts list L in ascending order
-// Returns OK if successful, ERROR if list is empty or doesn't exist
+// Sorts the list in ascending order using bubble sort
 {
     if (L.elem == NULL || L.length < 1)
         return ERROR;
@@ -237,7 +227,7 @@ status SortList(SqList &L)
 }
 
 status SaveList(SqList &L, char FileName[])
-// Saves list L to file FileName, returns OK if successful, INFEASIBLE if list doesn't exist
+// Saves the list to a text file
 {
     if (L.elem == NULL)
         return INFEASIBLE;
@@ -254,7 +244,7 @@ status SaveList(SqList &L, char FileName[])
 }
 
 status LoadList(SqList &L, char FileName[])
-// Loads data from file FileName into list L, returns OK if successful, INFEASIBLE if list already exists
+// Loads list data from a text file
 {
     if (L.elem != NULL)
         return INFEASIBLE;
@@ -284,8 +274,7 @@ status LoadList(SqList &L, char FileName[])
 }
 
 status AddList(LISTS &Lists, char ListName[])
-// Adds an empty list with name ListName to Lists
-// Returns OK if successful, ERROR if Lists is full
+// Adds a new named list to the list manager
 {
     if (Lists.length >= 10)
     {
@@ -293,7 +282,6 @@ status AddList(LISTS &Lists, char ListName[])
         return ERROR;
     }
     Lists.elem[Lists.length].L.elem = NULL;
-
     strcpy(Lists.elem[Lists.length].name, ListName);
     InitList(Lists.elem[Lists.length].L);
     Lists.length++;
@@ -301,8 +289,7 @@ status AddList(LISTS &Lists, char ListName[])
 }
 
 status RemoveList(LISTS &Lists, char ListName[])
-// Removes list with name ListName from Lists
-// Returns OK if successful, ERROR if list not found
+// Removes a named list from the list manager
 {
     int c = 0, i = 0;
     for (; i < Lists.length; i++)
@@ -323,8 +310,7 @@ status RemoveList(LISTS &Lists, char ListName[])
 }
 
 int LocateList(LISTS &Lists, char ListName[])
-// Finds position of list with name ListName in Lists
-// Returns position if found, 0 if not found
+// Finds the position of a named list in the manager
 {
     int i = 0;
     for (; i < Lists.length; i++)
@@ -334,14 +320,15 @@ int LocateList(LISTS &Lists, char ListName[])
 }
 
 int main(void)
+// Main function providing interactive menu for list operations
 {
     SqList L{0, 0, NULL};
     LISTS Lists;
     int op = 1;
-    char lastnme[30] = {0};
+    char lastnme[30] = {0}; // Tracks last switched list name
     while (op)
     {
-        // system("cls");
+        // Display menu
         printf("\n\n");
         printf("      Menu for Linear Table On Sequence Structure \n");
         printf("-----------------------Basic---------------------\n");
@@ -361,32 +348,32 @@ int main(void)
         printf("       25. SwitchList          26. SyncList\n");
         printf("-----------------------Exit---------------------\n");
         printf("        0. Exit\n");
-        printf("Please select your operation [0~22]:\n");
+        printf("Please select your operation [0~26]:\n");
         scanf("%d", &op);
         switch (op)
         {
-        case 1:
+        case 1: // Initialize list
             if (InitList(L) == OK)
                 printf("List created successfully!\n");
             else
                 printf("List creation failed!\n");
             getchar();
             break;
-        case 2:
+        case 2: // Destroy list
             if (DestroyList(L) == OK)
                 printf("List destroyed successfully!\n");
             else
                 printf("List does not exist!\n");
             getchar();
             break;
-        case 3:
+        case 3: // Clear list
             if (ClearList(L) == OK)
                 printf("List cleared successfully!\n");
             else
                 printf("List does not exist!\n");
             getchar();
             break;
-        case 4:
+        case 4: // Check if list is empty
             switch (ListEmpty(L))
             {
             case TRUE:
@@ -401,7 +388,7 @@ int main(void)
             }
             getchar();
             break;
-        case 5:
+        case 5: // Get list length
         {
             int tmp = ListLength(L);
             if (tmp == INFEASIBLE)
@@ -411,7 +398,7 @@ int main(void)
             getchar();
             break;
         }
-        case 6:
+        case 6: // Get element at position
         {
             int tmp, key;
             printf("Please enter the position of the element you want to get: \n");
@@ -431,7 +418,7 @@ int main(void)
             getchar();
             break;
         }
-        case 7:
+        case 7: // Locate element
         {
             int t, tm;
             printf("Please enter the element you want to find: \n");
@@ -446,7 +433,7 @@ int main(void)
             getchar();
             break;
         }
-        case 8:
+        case 8: // Get predecessor
         {
             int tmp, pre, t;
             printf("Please enter the element you want to find the predecessor of: \n");
@@ -461,7 +448,7 @@ int main(void)
             getchar();
             break;
         }
-        case 9:
+        case 9: // Get successor
         {
             int tmp, next, t;
             printf("Please enter the element you want to find the successor of: \n");
@@ -476,7 +463,7 @@ int main(void)
             getchar();
             break;
         }
-        case 10:
+        case 10: // Insert element
         {
             int tmp, key, t;
             printf("Please enter the position where you want to insert the element: \n");
@@ -495,7 +482,7 @@ int main(void)
             getchar();
             break;
         }
-        case 11:
+        case 11: // Delete element
         {
             int tmp, key, t;
             printf("Please enter the position of the element you want to delete: \n");
@@ -515,9 +502,8 @@ int main(void)
             getchar();
             break;
         }
-        case 12:
+        case 12: // Display all elements
         {
-            // Display all elements in the list
             int t = ListTraverse(L);
             if (t == OK)
                 printf("List displayed successfully!\n");
@@ -526,9 +512,8 @@ int main(void)
             getchar();
             break;
         }
-        case 13:
+        case 13: // Find maximum subarray sum
         {
-            // Find the maximum sum of continuous subarray
             int max = MaxSubArray(L);
             if (max == ERROR)
                 printf("The list is empty or does not exist!\n");
@@ -537,9 +522,8 @@ int main(void)
             getchar();
             break;
         }
-        case 14:
+        case 14: // Count subarrays with sum k
         {
-            // Count the number of contiguous subarrays with sum equal to k
             int k, count;
             printf("Please enter the value of k(the sum of subarray): \n");
             scanf("%d", &k);
@@ -551,9 +535,8 @@ int main(void)
             getchar();
             break;
         }
-        case 15:
+        case 15: // Sort list
         {
-            // Sort the list in ascending order
             int t = SortList(L);
             if (t == OK)
                 printf("List sorted in ascending order successfully!\n");
@@ -562,9 +545,8 @@ int main(void)
             getchar();
             break;
         }
-        case 16:
+        case 16: // Save list to file
         {
-            // Save the list to a file
             char FileName[30];
             printf("Please enter the file name to save the list: \n");
             scanf("%s", FileName);
@@ -576,9 +558,8 @@ int main(void)
             getchar();
             break;
         }
-        case 17:
+        case 17: // Load list from file
         {
-            // Load the list from a file
             char FileName[30];
             printf("Please enter the file name to load the list: \n");
             scanf("%s", FileName);
@@ -590,16 +571,14 @@ int main(void)
             getchar();
             break;
         }
-        case 18:
-            // Initialize the list manager
+        case 18: // Initialize list manager
             Lists.length = 0;
             Lists.listsize = 10;
             printf("List manager initialized successfully!\n");
             getchar();
             break;
-        case 19:
+        case 19: // Add new list to manager
         {
-            // Add a new list to the list manager
             if (Lists.listsize != 10)
             {
                 printf("The list manager is not initialized!\n");
@@ -624,9 +603,8 @@ int main(void)
             getchar();
             break;
         }
-        case 20:
+        case 20: // Remove list from manager
         {
-            // Remove a list from the list manager
             if (Lists.listsize != 10)
             {
                 printf("The list manager is not initialized!\n");
@@ -644,9 +622,8 @@ int main(void)
             getchar();
             break;
         }
-        case 21:
+        case 21: // Locate list in manager
         {
-            // Locate a list in the list manager
             if (Lists.listsize != 10)
             {
                 printf("The list manager is not initialized!\n");
@@ -664,9 +641,8 @@ int main(void)
             getchar();
             break;
         }
-        case 22:
+        case 22: // Randomly generate list data
         {
-            // Randomly set the list
             printf("This will reset the list randomly, are you sure?\n (1: Yes, 2: No): ");
             int n;
             scanf("%d", &n);
@@ -705,9 +681,8 @@ int main(void)
             }
             break;
         }
-        case 23:
+        case 23: // Manually set list data
         {
-            // Set the list
             if (L.elem == NULL)
             {
                 printf("The list does not exist, please initialize!\n");
@@ -745,9 +720,8 @@ int main(void)
             getchar();
             break;
         }
-        case 24:
+        case 24: // Show all managed lists
         {
-            // Show all lists in the list manager
             if (Lists.listsize != 10)
             {
                 printf("The list manager is not initialized!\n");
@@ -765,9 +739,8 @@ int main(void)
             getchar();
             break;
         }
-        case 25:
+        case 25: // Switch to different list
         {
-            // Switch to a different list in the list manager
             if (Lists.listsize != 10)
             {
                 printf("The list manager is not initialized!\n");
@@ -780,14 +753,13 @@ int main(void)
                 getchar();
                 break;
             }
+            // Save current list state
             if (lastnme[0] != 0)
             {
                 int t = LocateList(Lists, lastnme);
                 if (0 < t && t < 11)
                 {
                     Lists.elem[t - 1].L = L;
-                    // printf("synciiiiiiiiiiiiiiing\n");
-                    // ListTraverse(Lists.elem[t - 1].L);
                 }
             }
             char ListName[30];
@@ -802,9 +774,8 @@ int main(void)
             getchar();
             break;
         }
-        case 26:
+        case 26: // Synchronize current list with manager
         {
-            // Synchronize the list with the list manager
             if (L.elem == NULL)
             {
                 printf("The list does not exist!\n");
